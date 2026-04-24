@@ -30,6 +30,14 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
       <div>
         <div className="flex items-center space-x-2 mb-4">
           <div className="w-1 h-5 bg-primary rounded-full"></div>
+          <h3 className="font-bold text-gray-900 uppercase tracking-wider text-sm">Filters</h3>
+        </div>
+      </div>
+
+      {/* Category Section */}
+      <div>
+        <div className="flex items-center space-x-2 mb-4">
+          <div className="w-1 h-5 bg-primary rounded-full"></div>
           <h3 className="font-bold text-gray-900 uppercase tracking-wider text-sm">Category</h3>
         </div>
         <ul className="space-y-3">

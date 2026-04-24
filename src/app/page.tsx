@@ -76,12 +76,8 @@ const filteredProducts = React.useMemo(() => {
 
 return (
     <main className="min-h-screen bg-white">
-      {/* 1. Navbar tetap di atas */}
-      <Navbar />
-
       {/* 2. Hero Section (Full Width, tidak terpotong kontainer) */}
       <Hero />
-
       <div className="max-w-7xl mx-auto py-12 px-6">
         <div className="flex flex-col md:flex-row gap-12">
           
