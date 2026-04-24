@@ -7,69 +7,134 @@ import { ProductCard } from '@/components/ui/ProductCard';
 import { SkeletonCard } from '@/components/common/SkeletonCard';
 import { Navbar } from '@/components/common/Navbar';
 import { motion } from 'framer-motion';
+import { Hero } from '@/components/common/Hero';
+import { FilterSidebar } from '@/components/ui/FilterSidebar';
 
 export default function CatalogPage() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [loading, setLoading] = useState(true); // State untuk hasil filter
+  const [activePriceRange, setActivePriceRange] = useState('All Prices');
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchCategories = async () => {
       try {
-        setLoading(true);
-        const response = await api.get('/products');
-        setProducts(response.data);
+        const response = await api.get('/products/categories');
+        setCategories(response.data);
       } catch (error) {
-        console.error('Failed to fetch products:', error);
-      } finally {
-        setLoading(false);
+        console.error('Failed to fetch categories:', error);
       }
     };
-
-    fetchProducts();
+    fetchCategories();
   }, []);
+
+ useEffect(() => {
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const endpoint = activeCategory === 'all' 
+        ? '/products' 
+        : `/products/category/${activeCategory}`;
+      
+      const response = await api.get(endpoint);
+      setProducts(response.data);
+    } catch (error) {
+      console.error('Failed to fetch products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchProducts();
+}, [activeCategory]);
+
+// useEffect untuk Filter Logic
+const filteredProducts = React.useMemo(() => {
+  let result = [...products];
+
+  // Logic Filter Harga
+  if (activePriceRange !== 'All Prices') {
+    if (activePriceRange === '$0 - $50') {
+      result = result.filter(p => p.price <= 50);
+    } else if (activePriceRange === '$50 - $100') {
+      result = result.filter(p => p.price > 50 && p.price <= 100);
+    } else if (activePriceRange === '$100 - $500') {
+      result = result.filter(p => p.price > 100 && p.price <= 500);
+    } else if (activePriceRange === 'Above $500') {
+      result = result.filter(p => p.price > 500);
+    }
+  }
+
+  return result;
+}, [activePriceRange, products]);
 
   const handleAddToCart = (product: Product) => {
     // Nanti kita sambungin ke Redux di sini
     console.log('Added to cart:', product.title);
   };
 
-  return (
-    <main className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-          <Navbar />
-        {/* Header Section */}
-        <header className="mb-10 text-center sm:text-left">
-          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-            Our Catalog
-          </h1>
-          <p className="mt-2 text-gray-600">
-            Explore our latest products with high-quality standards.
-          </p>
-        </header>
+return (
+    <main className="min-h-screen bg-white">
+      {/* 1. Navbar tetap di atas */}
+      <Navbar />
 
-        {/* Grid System */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {loading ? (
-            // Tampilkan 8 Skeleton pas lagi loading
-            Array.from({ length: 8 }).map((_, index) => (
-              <SkeletonCard key={index} />
-            ))
-          ) : (
-            // Tampilkan Produk asli dengan Animasi Framer Motion
-            products.map((product) => (
-              <motion.div
-                key={product.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-              >
-                <ProductCard 
-                  product={product} 
-                  onAddToCart={handleAddToCart} 
-                />
-              </motion.div>
-            ))
-          )}
+      {/* 2. Hero Section (Full Width, tidak terpotong kontainer) */}
+      <Hero />
+
+      <div className="max-w-7xl mx-auto py-12 px-6">
+        <div className="flex flex-col md:flex-row gap-12">
+          
+          {/* 3. Filter Sidebar (Kiri) */}
+         <FilterSidebar 
+            categories={categories}
+            activeCategory={activeCategory}
+            onCategoryChange={setActiveCategory}
+            activePriceRange={activePriceRange} // <-- Tambahin ini
+            onPriceChange={setActivePriceRange} // <-- Tambahin ini
+          />
+
+          {/* 4. Katalog Section (Kanan) */}
+          <div className="flex-1">
+            <header className="mb-10">
+              <h1 className="text-3xl font-bold text-gray-900 tracking-tight capitalize">
+                {activeCategory === 'all' ? 'Our Catalog' : activeCategory}
+              </h1>
+              <p className="mt-2 text-gray-500 italic">
+                {products.length} Items Found
+              </p>
+            </header>
+
+            {/* Grid System - Kita ganti jadi 3 kolom karena sudah ada sidebar */}
+           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {loading ? (
+              Array.from({ length: 6 }).map((_, index) => (
+                <SkeletonCard key={index} />
+              ))
+            ) : filteredProducts.length > 0 ? ( // Cek filteredProducts
+              filteredProducts.map((product) => ( // Render filteredProducts
+                <motion.div
+                  key={product.id}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <ProductCard 
+                    product={product} 
+                    onAddToCart={handleAddToCart} 
+                  />
+                </motion.div>
+              ))
+            ) : (
+              // Tampilkan pesan jika hasil filter kosong
+              <div className="col-span-full text-center py-20">
+                <p className="text-gray-500">No products found in this price range.</p>
+              </div>
+            )}
+          </div>
+          </div>
+
         </div>
       </div>
     </main>
