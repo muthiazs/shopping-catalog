@@ -22,9 +22,10 @@ export const ProductInfo = ({ product }: { product: Product }) => {
   };
 
   const handleAdd = () => {
-    // Memanggil dispatch dengan object yang sesuai payload di cartSlice
+    // 1. Baris ini yang WAJIB ada supaya data masuk ke Redux
+    dispatch(addToCart({ product, quantity }));
     
-    // Feedback manis, ganti alert bawaan browser
+    // 2. Feedback visual (Toast)
     toast.success(`${quantity} item(s) added to your cart!`, {
       style: {
         borderRadius: '12px',

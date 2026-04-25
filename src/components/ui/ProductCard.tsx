@@ -1,20 +1,45 @@
-// src/components/ui/ProductCard.tsx
+'use client'; // Tambahkan ini di baris pertama paling atas
+
 import React from 'react';
 import Image from 'next/image';
-import Link from 'next/link'; // Import Link
-import { ChevronRight, Star } from 'lucide-react';
+import Link from 'next/link';
+import { ChevronRight, Star, ShoppingCart } from 'lucide-react';
 import { Product } from '@/types/product';
+import { useDispatch } from 'react-redux'; // Sudah benar
+import { addToCart } from '@/store/cartSlice';
+import { toast } from 'react-hot-toast';
 
 interface ProductCardProps {
   product: Product;
-  onAddToCart: (product: Product) => void;
+  onAddToCart?: (product: Product) => void; // Kasih tanda tanya (?) biar optional
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  // --- INI YANG KURANG TADI, MUT ---
+  const dispatch = useDispatch(); 
+
+  const handleQuickAdd = (e: React.MouseEvent) => {
+    // 1. Biar pas klik tombol Add, dia nggak malah pindah ke halaman detail
+    e.preventDefault();
+    e.stopPropagation();
+
+    // 2. Dispatch ke Redux
+    dispatch(addToCart({ product, quantity: 1 }));
+
+    // 3. Munculkan Toast (Biar PR kamu kelar!)
+    toast.success(`${product.title} added!`, {
+      style: {
+        borderRadius: '12px',
+        background: '#0a1227',
+        color: '#fff',
+      },
+    });
+  };
+
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl p-3 flex flex-col group transition-all duration-300 hover:shadow-md h-full">
+    // Tambahkan "relative" di div utama supaya tombol cart absolute-nya nggak lari kemana-mana
+    <div className="relative bg-white border border-gray-100 rounded-2xl p-3 flex flex-col group transition-all duration-300 hover:shadow-md h-full">
       
-      {/* Bungkus Gambar dengan Link ke Detail */}
       <Link href={`/products/${product.id}`} className="cursor-pointer">
         <div className="relative w-full aspect-[4/3] mb-4 overflow-hidden rounded-xl bg-gray-50">
           <Image 
@@ -27,7 +52,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }
         </div>
       </Link>
 
-      {/* Info Content */}
       <div className="px-1 flex flex-col flex-grow">
         <div className="flex items-center space-x-1 mb-2">
           {[...Array(5)].map((_, i) => (
@@ -35,9 +59,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }
           ))}
         </div>
 
-        {/* Bungkus Judul dengan Link ke Detail */}
         <Link href={`/products/${product.id}`}>
-          <h3 className="text-base font-bold text-gray-900 mb-1 line-clamp-1 hover:text-primary transition-colors cursor-pointer">
+          <h3 className="text-base font-bold text-gray-900 mb-1 line-clamp-1 hover:text-blue-900 transition-colors cursor-pointer">
             {product.title}
           </h3>
         </Link>
@@ -53,28 +76,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }
         <div className="border-t border-gray-50 pt-4 mt-auto flex justify-between items-end">
           <div className="flex flex-col">
             <span className="text-[10px] text-gray-400 font-medium">Starting at</span>
-            <span className="text-xl text-blue-900 font-bold text-primary">
+            <span className="text-xl text-blue-900 font-bold">
               ${product.price.toFixed(2)}
             </span>
           </div>
           
-          {/* Tombol View juga arahkan ke detail */}
-          <Link href={`/products/${product.id}`} className="flex items-center text-xs font-bold text-primary hover:translate-x-1 transition-transform group/btn">
+          <Link href={`/products/${product.id}`} className="flex items-center text-xs font-bold text-blue-900 hover:translate-x-1 transition-transform group/btn">
             View <ChevronRight className="w-4 h-4 ml-0.5" />
           </Link>
         </div>
-
-        {/* Tombol Add to Cart (Tetap pake onClick biar gak bentrok sama Link) */}
-        <button 
-          onClick={(e) => {
-            e.preventDefault(); // Mencegah bubbling kalau seandainya dibungkus link luar
-            onAddToCart(product);
-          }}
-          className="mt-4 w-full bg-blue-900 text-white py-2 rounded-lg text-xs font-bold hover:bg-primary hover:text-white transition-all border border-primary/10"
-        >
-          Quick Add to Cart
-        </button>
       </div>
+      <button 
+        onClick={handleQuickAdd}
+        className="absolute top-4 right-4 p-3 bg-blue-900 text-white rounded-xl shadow-lg hover:scale-110 transition-all z-10"
+      >
+        <ShoppingCart size={18} />
+      </button>
     </div>
   );
 };
