@@ -1,36 +1,24 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TJERMIN - Modern E-Commerce Catalog
 
-## Getting Started
+A high-performance e-commerce catalog built with Next.js 15, TypeScript, and Redux Toolkit.
 
-First, run the development server:
+## Demo Live : https://shopping-catalog-pi.vercel.app/
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Key Features
+- **Persistent Cart:** Integrated with Redux Persist (Cart data remains after refresh).
+- **Global Search:** Real-time product filtering by title and category.
+- **Dynamic Routing:** Server-side and Client-side rendering for detailed product views.
+- **Micro-interactions:** Responsive UI with React Hot Toast for instant user feedback.
+- **Hydration Handling:** Implemented 'mounted' state logic to ensure smooth Redux-sync with Next.js.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Tech Stack
+- **Framework:** Next.js 15 (App Router)
+- **State Management:** Redux Toolkit & Redux Persist
+- **Styling:** Tailwind CSS & Lucide Icons
+- **Data Source:** Fake Store API (Axios)
+- **Deployment:** Vercel
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## ⚙️ Installation
+1. Clone the repository
+2. Run `npm install`
+3. Run `npm run dev`
